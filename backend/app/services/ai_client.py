@@ -43,4 +43,5 @@ class GeminiClient:
             f"Use the table `{project_id}.{dataset}.{table}`.\n"
             f"Only return the SQL code. No explanation, no markdown formatting."
         )
-        return self.ask(prompt)
+        sql = self.ask(prompt)
+        return sql.strip().removeprefix("```sql").removesuffix("```").strip()
