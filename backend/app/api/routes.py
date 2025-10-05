@@ -30,20 +30,27 @@ def ask_question(payload: dict):
 
 
 @router.post("/query")
-def query_data(request: QueryRequest):
+async def query_data(request: QueryRequest):
     question = request.question
 
-    try:
-        # Step 1: Generate SQL from Gemini
-        sql = gemini.generate_sql(question)  # You need to add generate_sql method in GeminiClient
+    project = os.getenv("GCP_PROJECT_ID")
+    dataset = request.dataset or os.getenv("BIGQUERY_DATASET")
+    table = request.table or os.getenv("BIGQUERY_TABLE")
 
-        # Step 2: Run SQL on BigQuery
+    if not dataset or not table:
+        raise HTTPException(status_code=400, detail="Dataset and table must be specified")
+
+    try:
+        prompt = (
+            f"Generate a valid BigQuery SQL query that answers this question: \"{question}\".\n"
+            f"Use the table `{project}.{dataset}.{table}`."
+        )
+        sql = gemini.ask(prompt)
+
         results = bq_client.run_query(sql)
 
-        return {
-            "sql": sql,
-            "results": results
-        }
+        return {"sql": sql, "results": results}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
