@@ -34,3 +34,13 @@ terraform init
 terraform plan -var-file=terraform.tfvars
 terraform apply -var-file=terraform.tfvars
 ```
+
+_________________________
+
+pip install -r requirements.txt
+
+test in local:
+
+uvicorn app.main:app --reload
+
+You can also chec: curl http://127.0.0.1:8000/api/
