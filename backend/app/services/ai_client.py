@@ -2,7 +2,7 @@ import os
 import requests
 
 class GeminiClient:
-    def __init__(self, model_name: str = "gemini-2.0-pro"):
+    def __init__(self, model_name: str = "gemini-2.0-flash"):
         self.api_key = os.getenv("GEMINI_API_KEY")
         self.model_name = model_name
         self.api_url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model_name}:generateContent"
