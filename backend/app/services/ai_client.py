@@ -36,3 +36,7 @@ class GeminiClient:
             return result['candidates'][0]['content']['parts'][0]['text']
         except (KeyError, IndexError):
             raise Exception("Failed to parse Gemini API response.")
+    
+    def generate_sql(self, question: str) -> str:
+        prompt = f"Generate a BigQuery SQL query that answers this question: \"{question}\""
+        return self.ask(prompt)
