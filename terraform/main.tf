@@ -105,5 +105,6 @@ region = var.region
 name = "analytics-connector"
 ip_cidr_range = var.vpc_connector_cidr
 network        = "default"
+max_throughput = 100
 }
 
