@@ -35,7 +35,7 @@ def ask_question(payload: dict):
 @router.post("/query")
 async def query_data(request: QueryRequest):
     question = request.question
-    project = os.getenv("GCP_PROJECT_ID")
+    project = "brave-reason-421203"
     dataset = request.dataset or os.getenv("BIGQUERY_DATASET")
     table = request.table or os.getenv("BIGQUERY_TABLE")
 
