@@ -2,7 +2,7 @@ import os
 import requests
 
 class GeminiClient:
-    def __init__(self, model_name: str = "gemini-2.0-flash"):
+    def __init__(self, model_name: str = "gemini-2.0-pro"):
         self.api_key = os.getenv("GEMINI_API_KEY")
         self.model_name = model_name
         self.api_url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model_name}:generateContent"
@@ -36,7 +36,11 @@ class GeminiClient:
             return result['candidates'][0]['content']['parts'][0]['text']
         except (KeyError, IndexError):
             raise Exception("Failed to parse Gemini API response.")
-    
-    def generate_sql(self, question: str) -> str:
-        prompt = f"Generate a BigQuery SQL query that answers this question: \"{question}\""
+
+    def generate_sql(self, question: str, project_id: str, dataset: str, table: str) -> str:
+        prompt = (
+            f"Generate a valid BigQuery SQL query to answer the question: \"{question}\".\n"
+            f"Use the table `{project_id}.{dataset}.{table}`.\n"
+            f"Only return the SQL code. No explanation, no markdown formatting."
+        )
         return self.ask(prompt)
