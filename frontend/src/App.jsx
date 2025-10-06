@@ -1,35 +1,108 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
+import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [question, setQuestion] = useState('');
+  const [dataset, setDataset] = useState('banking_dataset');
+  const [table, setTable] = useState('banking_clean');
+  const [sql, setSql] = useState('');
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleSubmit = async () => {
+    setLoading(true);
+    setError('');
+    setSql('');
+    setResults([]);
+
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/query', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ question, dataset, table }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.detail || 'Unknown error');
+      }
+
+      setSql(data.sql);
+      setResults(data.results);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="App">
+      <h1>🧠 BIxAI - Natural Language Analytics</h1>
+
+      <input
+        type="text"
+        placeholder="Ask a question..."
+        value={question}
+        onChange={(e) => setQuestion(e.target.value)}
+      />
+
+      <input
+        type="text"
+        placeholder="Dataset (optional)"
+        value={dataset}
+        onChange={(e) => setDataset(e.target.value)}
+      />
+
+      <input
+        type="text"
+        placeholder="Table (optional)"
+        value={table}
+        onChange={(e) => setTable(e.target.value)}
+      />
+
+      <button onClick={handleSubmit} disabled={loading}>
+        {loading ? 'Asking Gemini...' : 'Submit'}
+      </button>
+
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+
+      {sql && (
+        <div>
+          <h3>📝 Generated SQL:</h3>
+          <pre>{sql}</pre>
+        </div>
+      )}
+
+      {results.length > 0 && (
+        <div>
+          <h3>📊 Query Results:</h3>
+          <table border="1">
+            <thead>
+              <tr>
+                {Object.keys(results[0]).map((col) => (
+                  <th key={col}>{col}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {results.map((row, idx) => (
+                <tr key={idx}>
+                  {Object.values(row).map((val, i) => (
+                    <td key={i}>{val}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
 }
 
-export default App
+export default App;
