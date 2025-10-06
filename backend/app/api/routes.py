@@ -2,13 +2,12 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import Optional
 from app.services.ai_client import GeminiClient
-from app.services.bigquery_client import BigQueryClient
+from app.core.orchestrator import AnalyticsOrchestrator
 import os
 
 router = APIRouter()
 
 gemini = GeminiClient()
-bq_client = BigQueryClient(project_id=os.getenv("GCP_PROJECT_ID"))
 
 class QueryRequest(BaseModel):
     question: str
@@ -31,29 +30,20 @@ def ask_question(payload: dict):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
 @router.post("/query")
 async def query_data(request: QueryRequest):
     question = request.question
-    project = "brave-reason-421203"
+    project = os.getenv("GCP_PROJECT_ID", "brave-reason-421203")  # fallback to hardcoded if env var not set
     dataset = request.dataset or os.getenv("BIGQUERY_DATASET")
     table = request.table or os.getenv("BIGQUERY_TABLE")
 
     if not dataset or not table:
-        raise HTTPException(status_code=400, detail="Dataset and table must be specified (either in request or as env vars)")
+        raise HTTPException(status_code=400, detail="Dataset and table must be specified (in request or env vars)")
 
     try:
-        # Step 1: Generate SQL with Gemini
-        sql = gemini.generate_sql(question, project, dataset, table)
-        print(f"Generated SQL:\n{sql}")  # Optional: For debugging
-
-        # Step 2: Run SQL on BigQuery
-        results = bq_client.run_query(sql)
-
-        return {
-            "sql": sql,
-            "results": results
-        }
+        orchestrator = AnalyticsOrchestrator(project, dataset, table)
+        result = orchestrator.handle_question(question)
+        return result
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
