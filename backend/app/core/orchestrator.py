@@ -13,9 +13,15 @@ class AnalyticsOrchestrator:
         prompt = (
             f"Generate a valid BigQuery SQL query that answers this question: \"{question}\".\n"
             f"Use the table `{self.project_id}.{self.dataset}.{self.table}`.\n"
-            f"Only return the SQL query, no explanations."
+            f"Only return the SQL query, no explanations or markdown formatting like triple backticks."
         )
-        sql = self.gemini.ask(prompt)
+
+        sql = self.gemini.ask(prompt).strip()
+
+        # 🧹 Clean unwanted markdown/code formatting if present
+        if sql.startswith("```") and sql.endswith("```"):
+            sql = sql.strip("`").strip()  # remove ``` and whitespace
+
         results = self.bq.run_query(sql)
 
         return {
