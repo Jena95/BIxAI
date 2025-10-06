@@ -17,7 +17,8 @@ function App() {
     setResults([]);
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/query', {
+      const response = await fetch('https://8000-cs-d9f0ebd2-9b75-4534-8070-65868fb45d2a.cs-asia-southeast1-seal.cloudshell.dev/api/query', {
+
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
