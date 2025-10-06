@@ -12,7 +12,7 @@ app = FastAPI(
 # Allow CORS for your frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173/"],  # You can replace * with your frontend URL for more security , allow_origins=["https://5173-<your-project>.cloudshell.dev"]
+    allow_origins=["*"],  # You can replace * with your frontend URL for more security , allow_origins=["https://5173-<your-project>.cloudshell.dev"]
 
     allow_credentials=True,
     allow_methods=["*"],
