@@ -17,7 +17,7 @@ function App() {
     setResults([]);
 
     try {
-      const response = await fetch('https://bixai-api-185017523924.asia-southeast1.run.app/api/query', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/query`, {
 
         method: 'POST',
         headers: {
