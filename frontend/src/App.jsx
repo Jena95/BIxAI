@@ -17,7 +17,7 @@ function App() {
     setResults([]);
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/query', {
+      const response = await fetch('https://bixai-api-185017523924.asia-southeast1.run.app/api/query', {
 
         method: 'POST',
         headers: {
