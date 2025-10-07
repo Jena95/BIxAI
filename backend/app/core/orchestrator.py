@@ -1,5 +1,5 @@
-from app.services.ai_client import GeminiClient
-from app.services.bigquery_client import BigQueryClient
+from services.ai_client import GeminiClient
+from services.bigquery_client import BigQueryClient
 
 class AnalyticsOrchestrator:
     def __init__(self, project_id: str, dataset: str, table: str):
