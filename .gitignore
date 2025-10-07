@@ -13,3 +13,6 @@ override.tf.json
 .idea/
 *.swp
 *.swo
+
+__pycache__/
+*.pyc
