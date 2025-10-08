@@ -4,6 +4,7 @@ from typing import Optional
 from services.ai_client import GeminiClient
 from core.orchestrator import AnalyticsOrchestrator
 from middleware.auth import get_current_user
+import traceback    # For detailed error logging
 
 import os
 
@@ -53,4 +54,6 @@ async def query_data(request: QueryRequest):
         return result
 
     except Exception as e:
+        print("❌ ERROR in /query:", traceback.format_exc()) # Log the full traceback for debugging
         raise HTTPException(status_code=500, detail=str(e))
+
