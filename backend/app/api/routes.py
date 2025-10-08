@@ -17,6 +17,9 @@ class QueryRequest(BaseModel):
     dataset: Optional[str] = None
     table: Optional[str] = None
 
+class AskRequest(BaseModel):
+    question: str
+
 @router.get("/")
 def root():
     return {"message": "API is up and running 🚀"}
@@ -27,19 +30,15 @@ def secure_endpoint(current_user: str = Depends(get_current_user)):
     return {"message": f"Welcome, user {current_user}!"}
 
 @router.post("/ask")
-def ask_question(payload: dict):
-    question = payload.get("question")
-    if not question:
-        raise HTTPException(status_code=400, detail="Missing 'question' in payload")
-
+def ask_question(payload: AskRequest, current_user: str = Depends(get_current_user)):
     try:
-        answer = gemini.ask(question)
-        return {"question": question, "answer": answer}
+        answer = gemini.ask(payload.question)
+        return {"question": payload.question, "answer": answer}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/query")
-async def query_data(request: QueryRequest):
+async def query_data(request: QueryRequest, current_user: str = Depends(get_current_user)):
     question = request.question
     project = os.getenv("GCP_PROJECT_ID", "brave-reason-421203")  # fallback to hardcoded if env var not set
     dataset = request.dataset or os.getenv("BIGQUERY_DATASET")
