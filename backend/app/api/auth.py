@@ -21,7 +21,9 @@ def register(payload: RegisterRequest):
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
-        raise HTTPException(status_code=500, detail="Registration failed")
+        # raise HTTPException(status_code=500, detail="Registration failed")
+        raise HTTPException(status_code=500, detail=str(e))
+        
 
 @router.post("/login")
 def login(payload: LoginRequest):
