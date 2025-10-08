@@ -1,8 +1,10 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import Optional
 from services.ai_client import GeminiClient
 from core.orchestrator import AnalyticsOrchestrator
+from middleware.auth import get_current_user
+
 import os
 
 router = APIRouter()
@@ -17,6 +19,11 @@ class QueryRequest(BaseModel):
 @router.get("/")
 def root():
     return {"message": "API is up and running 🚀"}
+
+
+@router.get("/secure")
+def secure_endpoint(current_user: str = Depends(get_current_user)):
+    return {"message": f"Welcome, user {current_user}!"}
 
 @router.post("/ask")
 def ask_question(payload: dict):

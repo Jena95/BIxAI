@@ -5,3 +5,6 @@ google-auth
 requests
 google-genai
 fastapi[all]
+bcrypt
+python-jose[cryptography]
+python-dotenv
